@@ -36,6 +36,7 @@ var store sessions.Store
 var (
 	clientID     string
 	clientSecret string
+	oauthURI     string
 	config       *oauth2.Config
 )
 
@@ -62,8 +63,9 @@ func main() {
 		log.Fatalf("err loading: %v", err)
 	}
 
-	clientID = os.Getenv("AZURE_AD_CLIENT_ID")
-	clientSecret = os.Getenv("AZURE_AD_CLIENT_SECRET")
+	clientID = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
+	oauthURI = fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/", os.Getenv("TENANT_ID"))
 	if clientID == "" {
 		log.Fatal("AZURE_AD_CLIENT_ID must be set.")
 	}
@@ -74,8 +76,8 @@ func main() {
 		RedirectURL:  redirectURI,
 
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://login.microsoftonline.com/common/oauth2/authorize",
-			TokenURL: "https://login.microsoftonline.com/common/oauth2/token",
+			AuthURL:  oauthURI + "authorize",
+			TokenURL: oauthURI + "token",
 		},
 
 		Scopes: []string{"User.Read"},
