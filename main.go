@@ -21,10 +21,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	redirectURI string = "http://localhost:8080/callback"
-)
-
 // Authentication + Encryption key pairs
 var sessionStoreKeyPairs = [][]byte{
 	[]byte("something-very-secret"),
@@ -37,6 +33,7 @@ var (
 	clientID     string
 	clientSecret string
 	oauthURI     string
+	redirectURI  string
 	config       *oauth2.Config
 )
 
@@ -66,6 +63,7 @@ func main() {
 	clientID = os.Getenv("CLIENT_ID")
 	clientSecret = os.Getenv("CLIENT_SECRET")
 	oauthURI = fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/", os.Getenv("TENANT_ID"))
+	redirectURI = fmt.Sprintf("http://%s:8080/callback", os.Getenv("PUBLIC_IP"))
 	if clientID == "" {
 		log.Fatal("AZURE_AD_CLIENT_ID must be set.")
 	}
