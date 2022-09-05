@@ -1,0 +1,56 @@
+{
+  "builders": [
+    {
+      "type": "azure-arm",
+      "use_azure_cli_auth": true,
+      "subscription_id": "31a35a9c-3af2-40d9-9fdd-e501b37234a5",
+      "tenant_id": "12bb37bb-ad6f-4cef-8702-fb16a78f075e",
+      "client_id": "772fdb6d-e68b-45b8-a0f0-06c5e92a1cee",
+      "client_secret": "5sd8Q~J34Rs7SWzr.UotQmW-xoCY4lkTTQLNIc.s",
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "18.04-LTS",
+      "image_version": "latest",
+      "location": "japaneast",
+      "vm_size": "Standard_DS2_v2",
+      "polling_duration_timeout": "0h30m0s",
+      "managed_image_resource_group_name": "CainChen",
+      "managed_image_name": "CainDemoImage",
+      "shared_image_gallery_destination": {
+        "subscription": "31a35a9c-3af2-40d9-9fdd-e501b37234a5",
+        "resource_group": "CainChen",
+        "gallery_name": "CainGallery",
+        "image_name": "CainGalleryGeneralizedImageDefinition",
+        "image_version": "1.0.0",
+        "replication_regions": [
+          "japaneast"
+        ]
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+      "inline": [
+        "export DEBIAN_FRONTEND=noninteractive",
+        "apt-get update",
+        "apt-get upgrade -y",
+        "apt-get install -y dirmngr gnupg apt-transport-https ca-certificates",
+        "echo \"deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main\" > /etc/apt/sources.list.d/azure-cli.list",
+        "curl -sL https://packages.microsoft.com/keys/microsoft.asc | (OUT=$(apt-key add - 2>&1) || echo $OUT)",
+        "apt-get update",
+        "apt-get install -y azure-cli",
+        "az version",
+        "apt-get install -y docker.io",
+        "docker --version",
+        "docker pull cain19811028/go-azure-ad",
+        "mkdir -p /dlm",
+        "curl https://s3.us-west-2.amazonaws.com/cain.test/init.sh --output /dlm/init.sh",
+        "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+      ],
+      "inline_shebang": "/bin/sh -xe",
+      "type": "shell"
+    }
+  ]
+}

@@ -63,7 +63,7 @@ func main() {
 	clientID = os.Getenv("CLIENT_ID")
 	clientSecret = os.Getenv("CLIENT_SECRET")
 	oauthURI = fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/", os.Getenv("TENANT_ID"))
-	redirectURI = fmt.Sprintf("http://%s:8080/callback", os.Getenv("PUBLIC_IP"))
+	redirectURI = fmt.Sprintf("%s:8080/callback", os.Getenv("REDIRECT_URI"))
 	if clientID == "" {
 		log.Fatal("AZURE_AD_CLIENT_ID must be set.")
 	}
@@ -84,7 +84,8 @@ func main() {
 	http.Handle("/", handle(IndexHandler))
 	http.Handle("/callback", handle(CallbackHandler))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServeTLS(":8080", "server.crt", "server.key", nil))
 }
 
 type handle func(w http.ResponseWriter, req *http.Request) error
